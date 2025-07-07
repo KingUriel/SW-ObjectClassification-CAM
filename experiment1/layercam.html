@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Layer-CAM | Image Classification</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../style/experiment1-layercam.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+
+<body>
+    <noscript>This website requires JavaScript.</noscript>
+    <div id="wrapper">
+        <header>
+            <h1>Class</h1>
+            <meter min="0" max="1.0" low="0.25" high="0.75" optimum="1.0"></meter>
+        </header>
+        <form>
+            <input id="searchQuery" placeholder="Search Flickr...">
+            <button id="imageButton">Get image</button>
+            <select id="classSelect"></select>
+            <select id="modelSelect"></select>
+            <input id="opacitySlider" type=range min=0.0 max=1.0 step=0.01 value=0.75>
+        </form>
+        <div id="overlay">
+            <canvas id="imageCanvas"></canvas>
+            <canvas id="saliencyMap"></canvas>
+        </div>
+        <div id="dropArea">
+            <h2>Drag and drop upload an image here</h2>
+        </div>
+    </div>
+    <script src="../script/script-layercam.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CocoSSD | Object Detection</title>
+    <link rel="stylesheet" href="../style/experiment2-cocossd.css" />
+</head>
+<body>
+    <h1>Object Detection with Grad-CAM Interpretation</h1>
+    
+    <div class="upload-container">
+        <div class="upload-area" id="upload-area">
+            <p>Click to upload an image or drag and drop</p>
+            <input type="file" id="file-input" accept="image/*">
+            <button id="upload-btn">Upload Image</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing image...</p>
+        </div>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="image-container">
+            <div class="image-box">
+                <h3>Original Image</h3>
+                <canvas id="original-canvas"></canvas>
+            </div>
+            <div class="image-box">
+                <h3>Detection Results</h3>
+                <canvas id="detection-canvas"></canvas>
+                <div class="detection-info" id="detection-info"></div>
+            </div>
+            <div class="image-box">
+                <h3>Grad-CAM Interpretation</h3>
+                <p>Implementing Grad-CAM in TensorFlow.js for a model like COCO-SSD is not natively supported, mainly because object detection models like SSD do not expose internal feature maps and class logits in a way that's necessary for proper gradient-based visualization (like Grad-CAM or Grad-CAM++).</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="../script/script-cocossd.js"></script>
+</body>
+</html>
