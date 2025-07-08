@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple mel spectrogram</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #spektrogramm-container {
+      width: 720px;
+      height: 400px;
+      border: 1px solid #ccc;
+      overflow-x: scroll;
+      position: relative;
+    }
+    #spektrogramm {
+      display: block;
+      height: 380px;
+    }
+    #playhead {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 380px;
+      background-color: green;
+      z-index: 2;
+    }
+    canvas {
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Simple Mel Spectrogram</h2>
+  <input type="file" id="audio-upload" accept="audio/*">
+  <br><br>
+  <audio id="audio" controls></audio>
+  <div id="spektrogramm-container">
+    <div id="playhead"></div>
+    <canvas id="spektrogramm"></canvas>
+  </div>
+
+  <script>
+    const audioUpload = document.getElementById('audio-upload');
+    const audio = document.getElementById('audio');
+    const canvas = document.getElementById('spektrogramm');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('spektrogramm-container');
+    const playhead = document.getElementById('playhead');
+
+    let animationFrame;
+
+    audioUpload.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      audio.src = url;
+
+      const arrayBuffer = await file.arrayBuffer();
+      const audioContext = new AudioContext();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+      // Erstelle Mel-Spektrogramm (vereinfacht für Demo)
+      const sampleRate = audioBuffer.sampleRate;
+      const channelData = audioBuffer.getChannelData(0);
+      const fftSize = 1024;
+      const hopSize = fftSize / 2;
+      const numFrames = Math.floor((channelData.length - fftSize) / hopSize);
+      const canvasWidth = numFrames;
+
+      canvas.width = canvasWidth;
+      canvas.height = 380;
+
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = fftSize;
+      const buffer = new Float32Array(fftSize);
+      const melBands = 64;
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+
+      for (let i = 0; i < numFrames; i++) {
+        const offset = i * hopSize;
+        const slice = channelData.slice(offset, offset + fftSize);
+        const windowed = slice.map((x, j) => x * 0.5 * (1 - Math.cos(2 * Math.PI * j / (fftSize - 1))));
+
+        // Fake-Frequenzanalyse (simplifiziert, ersetzt später mit echten Mel-Filterbänken)
+        const magnitudes = new Float32Array(canvas.height);
+        for (let j = 0; j < canvas.height; j++) {
+          magnitudes[j] = Math.abs(windowed[Math.floor(j * windowed.length / canvas.height)]) || 0;
+        }
+
+        for (let y = 0; y < canvas.height; y++) {
+          const v = Math.min(255, magnitudes[y] * 500);
+          const index = (canvas.height - y - 1) * canvas.width * 4 + i * 4;
+          imageData.data[index + 0] = v;
+          imageData.data[index + 1] = v;
+          imageData.data[index + 2] = v;
+          imageData.data[index + 3] = 255;
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+    });
+
+    function updatePlayhead() {
+      const currentTime = audio.currentTime;
+      const duration = audio.duration;
+      const progress = currentTime / duration;
+      const x = canvas.width * progress;
+      playhead.style.left = `${x}px`;
+
+      if (x > container.scrollLeft + container.clientWidth - 100) {
+        container.scrollLeft = x - container.clientWidth / 2;
+      }
+
+      if (!audio.paused) {
+        animationFrame = requestAnimationFrame(updatePlayhead);
+      }
+    }
+
+    audio.addEventListener('play', () => {
+      animationFrame = requestAnimationFrame(updatePlayhead);
+    });
+
+    audio.addEventListener('pause', () => {
+      cancelAnimationFrame(animationFrame);
+    });
+
+    audio.addEventListener('ended', () => {
+      cancelAnimationFrame(animationFrame);
+    });
+  </script>
+</body>
+</html>
