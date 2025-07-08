@@ -109,7 +109,7 @@ async function classifyImage(image, model) {
     const x = preprocess(image, model);
     const y = model.predict(x);
     const scores = await y.data();
-     console.log(`Scores: ${scores}`);
+    
     await populateClassSelect(scores);
     const classSelect = document.getElementById('classSelect');
     document.querySelector('h1').innerHTML = classSelect[0].text;

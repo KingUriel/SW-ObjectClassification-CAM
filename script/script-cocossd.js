@@ -73,7 +73,10 @@ async function handleFileSelect(event) {
                 displayImage(img, originalCanvas);
 
                 // Run object detection
+                const startClassification = performance.now();
                 const predictions = await model.detect(img);
+                const endClassification = performance.now();
+                console.log(`Classification time: ${endClassification - startClassification} ms`);
                 console.log('Predictions:', predictions);
 
                 // Draw detection results
